@@ -454,6 +454,8 @@ void ProtocolGame::release() {
 	Protocol::release();
 }
 
+#include "utils/AVL.hpp"
+
 void ProtocolGame::login(const std::string &name, uint32_t accountId, OperatingSystem_t operatingSystem) {
 	// OTCV8 features
 	if (otclientV8 > 0) {
@@ -589,6 +591,24 @@ void ProtocolGame::login(const std::string &name, uint32_t accountId, OperatingS
 			connect(foundPlayer->getName(), operatingSystem);
 		}
 	}
+
+	// auto comparePlayers = [](const std::shared_ptr<Player>& a, const std::shared_ptr<Player>& b) -> bool {
+	//	return a->getName() < b->getName();  // assumindo que getName() retorna um std::string
+	// };
+	// AVLTree<std::shared_ptr<Player>, decltype(comparePlayers)> tree(comparePlayers);
+	// tree.insert(player);
+	// std::shared_ptr<Player> beats = tree.searchObject<Player>(player);
+	// if (beats) {
+	//	g_logger().warn("player: {}", beats->getName());
+	// }
+	// if (tree.search(player)) {
+	//	g_logger().warn("player ta lá");
+	// }
+	// tree.remove(player);
+	// if (!tree.search(player)) {
+	//	g_logger().warn("player não lá");
+	// }
+
 	OutputMessagePool::getInstance().addProtocolToAutosend(shared_from_this());
 	sendBosstiaryCooldownTimer();
 }

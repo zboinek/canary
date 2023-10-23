@@ -165,6 +165,9 @@ namespace InternalGame {
 	}
 } // Namespace InternalGame
 
+#include "utils/AVL.hpp"
+#include "utils/vectorset.hpp"
+
 Game::Game() {
 	offlineTrainingWindow.choices.emplace_back("Sword Fighting and Shielding", SKILL_SWORD);
 	offlineTrainingWindow.choices.emplace_back("Axe Fighting and Shielding", SKILL_AXE);
@@ -179,6 +182,9 @@ Game::Game() {
 
 	// Create instance of IOWheel to Game class
 	m_IOWheel = std::make_unique<IOWheel>();
+
+	AVLTree<int> tree;
+	AVLTree<int>::benchmarkAVLTree(tree);
 }
 
 Game::~Game() = default;
