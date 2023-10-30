@@ -7749,7 +7749,7 @@ bool Player::canBuyStoreOffer(const Offer* offer) {
 		}
 
 		case OfferTypes_t::PREYSLOT: {
-			const auto& thirdSlot = getPreySlotById(PreySlot_Three);
+			const auto &thirdSlot = getPreySlotById(PreySlot_Three);
 
 			if (thirdSlot->state != PreyDataState_Locked) {
 				canBuy = false;
@@ -7824,7 +7824,7 @@ bool Player::canBuyStoreOffer(const Offer* offer) {
 		}
 
 		case OfferTypes_t::HUNTINGSLOT: {
-			const auto& thirdSlot = getTaskHuntingSlotById(PreySlot_Three);
+			const auto &thirdSlot = getTaskHuntingSlotById(PreySlot_Three);
 
 			if (thirdSlot->state != PreyDataState_Locked) {
 				canBuy = false;

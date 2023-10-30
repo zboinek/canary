@@ -801,7 +801,7 @@ bool IOLoginDataSave::savePlayerStoreHistory(std::shared_ptr<Player> player) {
 	query.str(std::string());
 
 	DBInsert insertQuery("INSERT INTO `store_history` (`account_id`, `mode`, `description`, `coin_amount`, `coin_type`, `type`, `time`) VALUES");
-	for (const auto& historyEntry : player->getStoreHistory()) {
+	for (const auto &historyEntry : player->getStoreHistory()) {
 		const auto descriptionString = Database::getInstance().escapeString(historyEntry.description);
 		// Append query informations
 		query << player->getAccount()->getID() << ','

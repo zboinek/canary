@@ -9989,14 +9989,14 @@ void Game::playerBuyStoreOffer(uint32_t playerId, const Offer* offer, std::strin
 
 			int32_t premiumDays = 3000 - offer->getOfferId();
 			player->getAccount()->setPremiumDays(static_cast<int32_t>(premiumDaysLeft + premiumDays));
-			//IOLoginData::addPremiumDays(player->getAccount(), premiumDays);
+			// IOLoginData::addPremiumDays(player->getAccount(), premiumDays);
 
 			success = true;
 			break;
 		}
 
 		case OfferTypes_t::PREYSLOT: {
-			const auto& thirdSlot = player->getPreySlotById(PreySlot_Three);
+			const auto &thirdSlot = player->getPreySlotById(PreySlot_Three);
 
 			if (thirdSlot->state != PreyDataState_Locked) {
 				break;
@@ -10035,7 +10035,7 @@ void Game::playerBuyStoreOffer(uint32_t playerId, const Offer* offer, std::strin
 		}
 
 		case OfferTypes_t::HUNTINGSLOT: {
-			const auto& thirdSlot = player->getTaskHuntingSlotById(PreySlot_Three);
+			const auto &thirdSlot = player->getTaskHuntingSlotById(PreySlot_Three);
 
 			if (thirdSlot->state != PreyDataState_Locked) {
 				break;
@@ -10121,7 +10121,7 @@ bool Game::processHouseOffer(std::shared_ptr<Player> player, uint32_t itemId, ui
 	if (!decoKit) {
 		return false;
 	}
-	const ItemType& itemType = Item::items[itemId];
+	const ItemType &itemType = Item::items[itemId];
 	std::string description = fmt::format("You bought this item in the Store.\nUnwrap it in your own house to create a <{}>.", itemType.name);
 	decoKit->setAttribute(ItemAttribute_t::DESCRIPTION, description);
 	decoKit->setCustomAttribute("unWrapId", static_cast<int64_t>(itemId));
@@ -10154,7 +10154,6 @@ bool Game::processHouseOffer(std::shared_ptr<Player> player, uint32_t itemId, ui
 
 	return true;
 }
-
 
 bool Game::processChargesOffer(std::shared_ptr<Player> player, uint32_t itemId, uint16_t charges /* = 0*/) {
 	auto newItem = Item::CreateItem(itemId, 1);
@@ -10218,7 +10217,7 @@ bool Game::processStackableOffer(std::shared_ptr<Player> player, uint32_t itemId
 	return true;
 }
 
-bool Game::processNameChangeOffer(std::shared_ptr<Player> player, std::string& name) {
+bool Game::processNameChangeOffer(std::shared_ptr<Player> player, std::string &name) {
 	std::string newName = name;
 	trimString(newName);
 
@@ -10229,7 +10228,7 @@ bool Game::processNameChangeOffer(std::shared_ptr<Player> player, std::string& n
 	}
 
 	std::ostringstream query;
-	Database& db = Database::getInstance();
+	Database &db = Database::getInstance();
 	query << "SELECT `id` FROM `player` WHERE `name` = " << db.escapeString(newName);
 	if (db.storeQuery(query.str())) {
 		return false;
@@ -10250,12 +10249,12 @@ bool Game::processNameChangeOffer(std::shared_ptr<Player> player, std::string& n
 	return true;
 }
 
-	bool Game::processTempleOffer(std::shared_ptr<Player> player) {
+bool Game::processTempleOffer(std::shared_ptr<Player> player) {
 	if (player->isPzLocked() || player->hasCondition(CONDITION_INFIGHT)) {
 		return false;
 	}
 
-	const auto& position = player->getTemplePosition();
+	const auto &position = player->getTemplePosition();
 	const auto oldPos = player->getPosition();
 
 	if (internalTeleport(player, position, false) != RETURNVALUE_NOERROR) {

@@ -2543,7 +2543,7 @@ public:
 		}
 	}
 
-	void sendStoreSuccess(const std::string& successMessage) {
+	void sendStoreSuccess(const std::string &successMessage) {
 		if (client) {
 			client->sendStoreSuccess(successMessage);
 		}
@@ -2555,11 +2555,11 @@ public:
 		}
 	}
 
-	std::vector<StoreHistory>& getStoreHistory() {
+	std::vector<StoreHistory> &getStoreHistory() {
 		return storeHistoryVector;
 	}
 
-	void setStoreHistory(const StoreHistory& history) {
+	void setStoreHistory(const StoreHistory &history) {
 		storeHistoryVector.push_back(history);
 	}
 

@@ -291,7 +291,7 @@ public:
 	bool processChargesOffer(std::shared_ptr<Player> player, uint32_t itemId, uint16_t charges = 0);
 	bool processStackableOffer(std::shared_ptr<Player> player, uint32_t itemId, uint16_t amount = 1);
 	bool processHouseOffer(std::shared_ptr<Player> player, uint32_t itemId, uint16_t charges = 0);
-	bool processNameChangeOffer(std::shared_ptr<Player> player, std::string& name);
+	bool processNameChangeOffer(std::shared_ptr<Player> player, std::string &name);
 	bool processTempleOffer(std::shared_ptr<Player> player);
 
 	void playerRewardChestCollect(uint32_t playerId, const Position &pos, uint16_t itemId, uint8_t stackPos, uint32_t maxMoveItems = 0);
