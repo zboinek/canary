@@ -12,6 +12,7 @@
 #include "server/network/protocol/protocol.hpp"
 #include "creatures/interactions/chat.hpp"
 #include "creatures/creature.hpp"
+#include "io/io_store.hpp"
 
 class NetworkMessage;
 class Player;
@@ -507,4 +508,24 @@ private:
 	void resetPlayerDeathTime() {
 		m_playerDeathTime = 0;
 	}
+
+	// Store Functions
+	void parseOpenStore();
+	void parseOfferDescription(NetworkMessage& msg);
+	void parseCoinTransfer(NetworkMessage& msg);
+	void parseRequestStoreOffers(NetworkMessage& msg);
+	void parseBuyStoreOffer(NetworkMessage& msg);
+	void parseOpenStoreHistory(NetworkMessage& msg);
+	void parseRequestStoreHistory(NetworkMessage& msg);
+
+	void openStore();
+	void sendStoreHome();
+	void sendOfferBytes(NetworkMessage& msg, const Offer* offer);
+	void sendCategoryOffers(const Category* category, uint32_t redirectId = 0);
+	void sendFoundOffers(std::vector<Offer> foundOffers);
+	void sendOfferDescription(const Offer* offer);
+	void sendStoreHistory(uint32_t page);
+	void sendStoreSuccess(std::string successMessage);
+	void sendStoreError(StoreErrors_t errorType, std::string errorMessage);
+	void requestPurchaseData(uint32_t offerId, uint8_t offerType);
 };

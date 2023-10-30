@@ -893,3 +893,20 @@ void IOLoginDataLoad::loadPlayerUpdateSystem(std::shared_ptr<Player> player) {
 	player->updateInventoryWeight();
 	player->updateItemsLight(true);
 }
+
+void IOLoginDataLoad::loadPlayerStoreHistory(std::shared_ptr<Player> player, DBResult_ptr result) {
+	std::ostringstream query;
+	query << "SELECT * FROM `store_history` WHERE `account_id` = " << player->getAccount()->getID();
+	if (result = Database::getInstance().storeQuery(query.str())) {
+		do {
+			StoreHistory history;
+			history.mode = result->getNumber<uint16_t>("mode");
+			history.description = result->getString("description");
+			history.coinAmount = result->getNumber<int16_t>("coin_amount");
+			history.coinType = result->getNumber<uint16_t>("coin_type");
+			history.historyType = result->getNumber<uint16_t>("type");
+			history.createdAt = result->getNumber<time_t>("time");
+			player->setStoreHistory(history);
+		} while (result->next());
+	}
+}

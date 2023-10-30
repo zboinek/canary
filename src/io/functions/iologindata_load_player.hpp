@@ -39,6 +39,7 @@ public:
 	static void loadPlayerBosstiary(std::shared_ptr<Player> player, DBResult_ptr result);
 	static void loadPlayerInitializeSystem(std::shared_ptr<Player> player);
 	static void loadPlayerUpdateSystem(std::shared_ptr<Player> player);
+	static void loadPlayerStoreHistory(std::shared_ptr<Player> player, DBResult_ptr result);
 
 private:
 	using ItemsMap = std::map<uint32_t, std::pair<std::shared_ptr<Item>, uint32_t>>;

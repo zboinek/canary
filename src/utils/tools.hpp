@@ -128,6 +128,7 @@ void capitalizeWords(std::string &source);
 void consoleHandlerExit();
 NameEval_t validateName(const std::string &name);
 
+bool isKegItem(uint16_t itemId);
 bool isCaskItem(uint16_t itemId);
 
 std::string getObjectCategoryName(ObjectCategory_t category);

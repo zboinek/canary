@@ -790,3 +790,36 @@ bool IOLoginDataSave::savePlayerStorage(std::shared_ptr<Player> player) {
 	}
 	return true;
 }
+
+bool IOLoginDataSave::savePlayerStoreHistory(std::shared_ptr<Player> player) {
+	std::ostringstream query;
+	query << "DELETE FROM `store_history` WHERE `account_id` = " << player->getAccount()->getID();
+	if (!Database::getInstance().executeQuery(query.str())) {
+		return false;
+	}
+
+	query.str(std::string());
+
+	DBInsert insertQuery("INSERT INTO `store_history` (`account_id`, `mode`, `description`, `coin_amount`, `coin_type`, `type`, `time`) VALUES");
+	for (const auto& historyEntry : player->getStoreHistory()) {
+		const auto descriptionString = Database::getInstance().escapeString(historyEntry.description);
+		// Append query informations
+		query << player->getAccount()->getID() << ','
+			  << historyEntry.mode << ','
+			  << descriptionString << ','
+			  << historyEntry.coinAmount << ','
+			  << historyEntry.coinType << ','
+			  << historyEntry.historyType << ','
+			  << historyEntry.createdAt;
+
+		if (!insertQuery.addRow(query)) {
+			return false;
+		}
+	}
+
+	if (!insertQuery.execute()) {
+		return false;
+	}
+
+	return true;
+}

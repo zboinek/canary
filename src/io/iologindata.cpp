@@ -172,6 +172,8 @@ bool IOLoginData::loadPlayer(std::shared_ptr<Player> player, DBResult_ptr result
 		// load bosstiary
 		IOLoginDataLoad::loadPlayerBosstiary(player, result);
 
+		IOLoginDataLoad::loadPlayerStoreHistory(player, result);
+
 		IOLoginDataLoad::loadPlayerInitializeSystem(player);
 		IOLoginDataLoad::loadPlayerUpdateSystem(player);
 
@@ -261,6 +263,8 @@ bool IOLoginData::savePlayerGuard(std::shared_ptr<Player> player) {
 	if (!IOLoginDataSave::savePlayerStorage(player)) {
 		throw DatabaseException("[IOLoginDataSave::savePlayerStorage] - Failed to save player storage: " + player->getName());
 	}
+
+	IOLoginDataSave::savePlayerStoreHistory(player);
 
 	return true;
 }
