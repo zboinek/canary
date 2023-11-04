@@ -1113,9 +1113,10 @@ void Combat::CombatFunc(std::shared_ptr<Creature> caster, const Position &origin
 		combatTileEffects(spectators.data(), caster, tile, params);
 	}
 
-	// Wheel of destiny update beam mastery damage
-	if (casterPlayer) {
-		casterPlayer->wheel()->updateBeamMasteryDamage(tmpDamage, beamAffectedTotal, beamAffectedCurrent);
+	// Wheel of destiny reduce spells cooldown timer
+	if (casterPlayer && !casterPlayer->isRemoved() && beamAffectedCurrent > 0) {
+		g_logger().debug("[Reduce Spell Cooldown] beam affected current: {}, total: {}", beamAffectedCurrent, beamAffectedTotal);
+		casterPlayer->wheel()->reduceAllSpellsCooldownTimer(beamAffectedCurrent * 1000);
 	}
 
 	postCombatEffects(caster, origin, pos, params);

@@ -2118,12 +2118,18 @@ void PlayerWheel::onThink(bool force /* = false*/) {
 }
 
 void PlayerWheel::reduceAllSpellsCooldownTimer(int32_t value) {
-	for (const auto &condition : m_player.getConditionsByType(CONDITION_SPELLCOOLDOWN)) {
+	for (auto condition : m_player.conditions) {
+		if (condition->getType() != CONDITION_SPELLCOOLDOWN) {
+			continue;
+		}
+
 		if (condition->getTicks() <= value) {
-			m_player.sendSpellCooldown(condition->getSubId(), 0);
 			condition->endCondition(m_player.getPlayer());
+			m_player.sendSpellCooldown(condition->getSubId(), 0);
 		} else {
+			g_logger().debug("[ReduceSpells] Old Ticks {}", condition->getTicks());
 			condition->setTicks(condition->getTicks() - value);
+			g_logger().debug("[ReduceSpells] New Ticks {}, Reduced Ticks {}, SubID {}", condition->getTicks(), value, condition->getSubId());
 			m_player.sendSpellCooldown(condition->getSubId(), condition->getTicks());
 		}
 	}

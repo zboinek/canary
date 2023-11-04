@@ -1378,16 +1378,6 @@ std::shared_ptr<Condition> Creature::getCondition(ConditionType_t type, Conditio
 	return nullptr;
 }
 
-std::vector<std::shared_ptr<Condition>> Creature::getConditionsByType(ConditionType_t type) const {
-	std::vector<std::shared_ptr<Condition>> conditionsVec;
-	for (const auto &condition : conditions) {
-		if (condition->getType() == type) {
-			conditionsVec.push_back(condition);
-		}
-	}
-	return conditionsVec;
-}
-
 void Creature::executeConditions(uint32_t interval) {
 	auto it = conditions.begin(), end = conditions.end();
 	while (it != end) {
