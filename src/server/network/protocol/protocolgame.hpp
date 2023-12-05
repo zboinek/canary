@@ -515,5 +515,5 @@ private:
 	}
 
 	bool checkAndRefreshToken(const std::string token, uint32_t accountId, const std::string &durationToken);
-	void sendErrorMessage(const std::string& message);
+	void sendErrorMessage(const std::string &message);
 };
