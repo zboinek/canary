@@ -87,6 +87,8 @@ target_link_libraries(${PROJECT_NAME}_lib
         protobuf::libprotobuf
         pugixml::pugixml
         spdlog::spdlog
+        Poco::Foundation
+        Poco::Crypto
         unofficial::argon2::libargon2
         unofficial::libmariadb
         unofficial::mariadbclient

@@ -125,6 +125,13 @@
 #include <parallel_hashmap/phmap.h>
 #include <parallel_hashmap/btree.h>
 
+// Poco
+#include <Poco/Base32Decoder.h>
+#include <Poco/HMACEngine.h>
+#include <Poco/SHA1Engine.h>
+#include <Poco/StreamCopier.h>
+#include <Poco/DateTime.h>
+
 // PugiXML
 #include <pugixml.hpp>
 

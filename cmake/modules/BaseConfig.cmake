@@ -34,6 +34,7 @@ find_package(magic_enum CONFIG REQUIRED)
 find_package(mio REQUIRED)
 find_package(pugixml CONFIG REQUIRED)
 find_package(spdlog REQUIRED)
+find_package(Poco CONFIG REQUIRED Foundation Crypto)
 find_package(unofficial-argon2 CONFIG REQUIRED)
 find_package(unofficial-libmariadb CONFIG REQUIRED)
 

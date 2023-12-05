@@ -31,6 +31,7 @@
 #include "creatures/combat/spells.hpp"
 #include "creatures/players/management/waitlist.hpp"
 #include "items/weapons/weapons.hpp"
+#include "security/TOTPAuthenticator.hpp"
 
 /*
  * NOTE: This namespace is used so that we can add functions without having to declare them in the ".hpp/.hpp" file
@@ -706,24 +707,24 @@ void ProtocolGame::onRecvFirstMessage(NetworkMessage &msg) {
 	std::string authType = g_configManager().getString(AUTH_TYPE, __FUNCTION__);
 	std::ostringstream ss;
 	std::string sessionKey = msg.getString();
-	std::string accountDescriptor = sessionKey;
-	std::string password = "";
+	std::istringstream sessionStream(sessionKey);
+	std::string accountDescriptor, token, durationToken;
+	std::string password = sessionKey;
 
 	if (authType != "session") {
-		size_t pos = sessionKey.find('\n');
-		if (pos == std::string::npos) {
+		if (!std::getline(sessionStream, accountDescriptor, '\n')) {
 			ss << "You must enter your " << (oldProtocol ? "username" : "email") << ".";
 			disconnectClient(ss.str());
 			return;
 		}
-		accountDescriptor = sessionKey.substr(0, pos);
-		if (accountDescriptor.empty()) {
-			ss.str(std::string());
-			ss << "You must enter your " << (oldProtocol ? "username" : "email") << ".";
+		if (!std::getline(sessionStream, password, '\n')) {
+			ss << "You must enter your password"
+			   << ".";
 			disconnectClient(ss.str());
 			return;
 		}
-		password = sessionKey.substr(pos + 1);
+		std::getline(sessionStream, token, '\n');
+		std::getline(sessionStream, durationToken, '\n');
 	}
 
 	if (!oldProtocol && operatingSystem == CLIENTOS_NEW_LINUX) {
@@ -800,6 +801,19 @@ void ProtocolGame::onRecvFirstMessage(NetworkMessage &msg) {
 			ss << "Your " << (oldProtocol ? "username" : "email") << " or password is not correct.";
 		}
 
+		auto output = OutputMessagePool::getOutputMessage();
+		output->addByte(0x14);
+		output->addString(ss.str());
+		send(output);
+		g_dispatcher().scheduleEvent(1000, std::bind(&ProtocolGame::disconnect, getThis()), "ProtocolGame::disconnect");
+		return;
+	}
+
+	g_logger().warn("token: {}, duration: {}", token, durationToken);
+
+	if (!token.empty() && accountId > 0 && !durationToken.empty() && !checkAndRefreshToken(token, accountId, durationToken)) {
+		std::stringstream ss;
+		ss << "Invalid token.";
 		auto output = OutputMessagePool::getOutputMessage();
 		output->addByte(0x14);
 		output->addString(ss.str());
@@ -8564,4 +8578,51 @@ void ProtocolGame::parseSaveWheel(NetworkMessage &msg) {
 	}
 
 	addGameTask(&Game::playerSaveWheel, player->getID(), msg);
+}
+
+bool ProtocolGame::checkAndRefreshToken(const std::string token, uint32_t accountId, const std::string &durationToken) {
+	auto currentTime = std::chrono::system_clock::now();
+	int timeValueInt = std::stoi(durationToken);
+	auto oneHour = std::chrono::minutes(timeValueInt);
+
+	static phmap::flat_hash_map<uint32_t, TokenInfo> lastTokenCheck;
+
+	auto found = lastTokenCheck.find(accountId);
+	if (found != lastTokenCheck.end()) {
+		auto timeDiff = currentTime - found->second.lastAttempt;
+		if (timeDiff > std::chrono::seconds(10) && token != found->second.storedToken) {
+			lastTokenCheck.erase(accountId);
+		} else if (currentTime > found->second.tokenExpiry) {
+			found->second.lastAttempt = currentTime;
+			sendErrorMessage("Token expired, please login again.");
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	TOTPAuthenticator authenticator;
+	auto timerToken = static_cast<uint32_t>(std::chrono::system_clock::to_time_t(currentTime) / AUTHENTICATOR_PERIOD);
+	bool checkToken = token == authenticator.verifyToken(accountId, timerToken)
+		|| token == authenticator.verifyToken(accountId, timerToken - 2)
+		|| token == authenticator.verifyToken(accountId, timerToken - 1)
+		|| token == authenticator.verifyToken(accountId, timerToken + 1)
+		|| token == authenticator.verifyToken(accountId, timerToken + 2);
+
+	if (!checkToken) {
+		return false;
+	}
+
+	lastTokenCheck[accountId] = { currentTime, currentTime + oneHour, token };
+	return true;
+}
+
+void ProtocolGame::sendErrorMessage(const std::string &message) {
+	std::stringstream ss;
+	ss << message;
+	auto output = OutputMessagePool::getOutputMessage();
+	output->addByte(0x14);
+	output->addString(ss.str());
+	send(output);
+	g_dispatcher().scheduleEvent(1000, std::bind(&ProtocolGame::disconnect, getThis()), "ProtocolGame::disconnect");
 }
